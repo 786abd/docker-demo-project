@@ -37,6 +37,13 @@ setTimeout(() => {
   process.exit(1);
 }, 10000);
 
+let arr = [];
+setInterval(() => {
+  arr.push(Buffer.alloc(10 * 1024 * 1024)); // 10MB
+  console.log("Allocating memory");
+}, 500);
+
+
 
 app.get("/", (req, res) => {
   res.send("Backend service running, let's go!");
