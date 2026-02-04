@@ -1,0 +1,45 @@
+version: "3.8"
+services:
+
+  nginx:
+    build: ./nginx
+    container_name: nginx_server
+    ports:
+      - 9000:80
+    depends_on:
+      - backend
+
+
+  backend:
+    build: ./backend
+    container_name: backend_service
+    expose:
+      - 3000
+    depends_on:
+      db:
+        condition: service_healthy
+
+    environment:
+      DB_HOST: db
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    
+
+  
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    
+volumes:
+  db_data:
