@@ -25,6 +25,19 @@ db.connect(err => {
 
 connectWithRetry();
 
+setInterval(() => {
+  const start = Date.now();
+  while (Date.now() - start < 1000) {} // busy loop
+
+  console.log("CPU spike simulated");
+}, 100);
+
+setTimeout(() => {
+  console.error("CPU overload - exiting");
+  process.exit(1);
+}, 10000);
+
+
 app.get("/", (req, res) => {
   res.send("Backend service running, let's go!");
 });
