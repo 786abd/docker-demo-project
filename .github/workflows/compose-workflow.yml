@@ -35,10 +35,10 @@ jobs:
       - name: SSH into EC2 and deploy
         run: |
           ssh -o StrictHostKeyChecking=no \
-              -i ~/.ssh/ec2.pem \
-              ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-                cd /home/ubuntu/docker-demo-project
-                git pull origin main
-                docker compose down -v
-                docker compose up -d --build
-              EOF
+          -i ~/.ssh/ec2.pem \
+          ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+          cd /home/ubuntu/docker-demo-project
+          git pull origin main
+          docker compose down -v
+          docker compose up -d --build
+          EOF

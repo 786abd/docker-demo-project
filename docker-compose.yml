@@ -1,4 +1,3 @@
-version: "3.8"
 services:
 
   nginx:
@@ -24,7 +23,6 @@ services:
     
     restart: unless-stopped
     mem_limit: 100m
-    cpu: "0.5"
     
 
   
