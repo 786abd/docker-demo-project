@@ -6,9 +6,9 @@ const PORT = 3000;
 
 // DB connection (will be used later with Docker)
 const db = mysql.createConnection({
-  host: process.env.DB_HOST || "localhost",
-  user: process.env.DB_USER || "root",
-  password: process.env.DB_PASSWORD || "rootpassword",
+  host: process.env.DB_HOST || "db",
+  user: process.env.DB_USER || "app_user",
+  password: process.env.DB_PASSWORD || "app_password",
   database: process.env.DB_NAME || "demodb"
 });
 
