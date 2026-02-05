@@ -1,0 +1,43 @@
+name: Self hosted runner Workflow
+
+on:
+  push:
+    branches:
+      [main]
+    workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, linux, x64]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: env file for app
+        run: |
+          cat <<EOF > .env
+          DB_HOST=db
+          DB_USER=app_user
+          DB_PASSWORD=app_password
+          DB_NAME=demodb
+          MYSQL_ROOT_PASSWORD=rootpassword
+          MYSQL_DATABASE=demodb
+          EOF
+
+      - name: build containers
+        run: |
+          docker compose build
+
+      - name: run containers
+        run: |
+          docker compose up -d
+      - name: List running containers
+        run: |
+          docker ps
+
+      - name: container logs
+        run: |
+          docker compose logs nginx
+          docker compose logs backend
+          docker compose logs db
