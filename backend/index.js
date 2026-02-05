@@ -25,23 +25,23 @@ db.connect(err => {
 
 connectWithRetry();
 
-setInterval(() => {
-  const start = Date.now();
-  while (Date.now() - start < 1000) {} // busy loop
+// setInterval(() => {
+//   const start = Date.now();
+//   while (Date.now() - start < 1000) {} // busy loop
 
-  console.log("CPU spike simulated");
-}, 100);
+//   console.log("CPU spike simulated");
+// }, 100);
 
-setTimeout(() => {
-  console.error("CPU overload - exiting");
-  process.exit(1);
-}, 10000);
+// setTimeout(() => {
+//   console.error("CPU overload - exiting");
+//   process.exit(1);
+// }, 10000);
 
-let arr = [];
-setInterval(() => {
-  arr.push(Buffer.alloc(10 * 1024 * 1024)); // 10MB
-  console.log("Allocating memory");
-}, 500);
+// let arr = [];
+// setInterval(() => {
+//   arr.push(Buffer.alloc(10 * 1024 * 1024)); // 10MB
+//   console.log("Allocating memory");
+// }, 500);
 
 
 
