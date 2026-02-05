@@ -4,26 +4,36 @@ const mysql = require("mysql2");
 const app = express();
 const PORT = 3000;
 
-// DB connection (will be used later with Docker)
-const db = mysql.createConnection({
+
+const mysql = require("mysql2");
+
+const pool = mysql.createPool({
   host: process.env.DB_HOST || "db",
   user: process.env.DB_USER || "app_user",
   password: process.env.DB_PASSWORD || "app_password",
-  database: process.env.DB_NAME || "demodb"
+  database: process.env.DB_NAME || "demodb",
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
-const connectWithRetry = () => {
-db.connect(err => {
+// Test connection once (non-fatal)
+pool.query("SELECT 1", err => {
   if (err) {
     console.error("Database connection failed:", err.message);
-    setTimeout(connectWithRetry, 5000);
   } else {
     console.log("Connected to MySQL");
   }
 });
-};
 
-connectWithRetry();
+
+// DB connection (will be used later with Docker)
+// const db = mysql.createConnection({
+//   host: process.env.DB_HOST || "db",
+//   user: process.env.DB_USER || "app_user",
+//   password: process.env.DB_PASSWORD || "app_password",
+//   database: process.env.DB_NAME || "demodb"
+// });
 
 // setInterval(() => {
 //   const start = Date.now();
@@ -51,11 +61,15 @@ app.get("/", (req, res) => {
 });
 
 app.get("/users", (req, res) => {
-  db.query("SELECT NOW() as time", (err, result) => {
-    if (err) return res.status(500).send(err);
+  pool.query("SELECT NOW() as time", (err, result) => {
+    if (err) {
+      console.error("Query failed:", err.message);
+      return res.status(500).send("DB query failed");
+    }
     res.json(result);
   });
 });
+
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Backend listening on port ${PORT}`);
