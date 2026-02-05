@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Docker Demo Frontend</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: #020617;
+      padding: 2rem;
+      border-radius: 10px;
+      width: 400px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    button {
+      margin-top: 1rem;
+      padding: 0.6rem 1rem;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    pre {
+      background: #020617;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+
+    .error {
+      color: #f87171;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🚀 Backend Status</h1>
+    <p id="status">Checking backend...</p>
+
+    <button onclick="loadTime()">Fetch DB Time</button>
+
+    <pre id="output"></pre>
+  </div>
+
+  <script>
+    const statusEl = document.getElementById("status");
+    const outputEl = document.getElementById("output");
+
+    // Check backend root
+    fetch("/")
+      .then(res => res.text())
+      .then(text => {
+        statusEl.textContent = text;
+      })
+      .catch(() => {
+        statusEl.innerHTML = '<span class="error">Backend unreachable</span>';
+      });
+
+    // Call /users (DB check)
+    function loadTime() {
+      outputEl.textContent = "Loading...";
+      fetch("/users")
+        .then(res => {
+          if (!res.ok) throw new Error("Request failed");
+          return res.json();
+        })
+        .then(data => {
+          outputEl.textContent = JSON.stringify(data, null, 2);
+        })
+        .catch(err => {
+          outputEl.innerHTML = `<span class="error">${err.message}</span>`;
+        });
+    }
+  </script>
+</body>
+</html>
