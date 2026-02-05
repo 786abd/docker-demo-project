@@ -13,14 +13,32 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
   
-      - name: SSH into ec2 and deloy docker compose 
-        uses: appleboy/ssh-action@v0.1.3
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd /home/ubuntu/docker-demo-project
-            git pull origin main
-            docker compose down -v
-            docker compose up -d --build
+      # - name: SSH into ec2 and deloy docker compose 
+      #   uses: appleboy/ssh-action@v0.1.3
+      #   with:
+      #     host: ${{ secrets.EC2_HOST }}
+      #     username: ${{ secrets.EC2_USER }}
+      #     key: ${{ secrets.EC2_SSH_KEY }}
+      #     script: |
+      #       cd /home/ubuntu/docker-demo-project
+      #       git pull origin main
+      #       docker compose down -v
+      #       docker compose up -d --build
+
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2.pem
+          chmod 600 ~/.ssh/ec2.pem
+
+      - name: SSH into EC2 and deploy
+        run: |
+          ssh -o StrictHostKeyChecking=no \
+              -i ~/.ssh/ec2.pem \
+              ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+                cd /home/ubuntu/docker-demo-project
+                git pull origin main
+                docker compose down -v
+                docker compose up -d --build
+              EOF
