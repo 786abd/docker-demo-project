@@ -5,7 +5,7 @@ const app = express();
 const PORT = 3000;
 
 const pool = mysql.createPool({
-  host: process.env.DB_HOST || "db",
+  host: "db",
   user: process.env.DB_USER || "app_user",
   password: process.env.DB_PASSWORD || "app_password",
   database: process.env.DB_NAME || "demodb",
@@ -49,6 +49,13 @@ pool.query("SELECT 1", err => {
 //   arr.push(Buffer.alloc(10 * 1024 * 1024)); // 10MB
 //   console.log("Allocating memory");
 // }, 500);
+
+app.get("/health", async (req, res) => {
+  pool.query("SELECT 1", err => {
+    if (err) return res.status(500).send("DB DOWN");
+    res.send("OK");
+  });
+});
 
 
 app.use(express.static("public"));
