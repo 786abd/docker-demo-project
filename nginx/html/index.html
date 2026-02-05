@@ -2,97 +2,156 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Docker Demo Frontend</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Docker Demo | DevOps Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
+    * {
+      box-sizing: border-box;
+      font-family: "JetBrains Mono", monospace;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
+      margin: 0;
+      background: radial-gradient(circle at top, #0f172a, #020617);
       color: #e5e7eb;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
     }
 
-    .card {
+    .panel {
       background: #020617;
-      padding: 2rem;
-      border-radius: 10px;
-      width: 400px;
-      box-shadow: 0 0 30px rgba(0,0,0,0.5);
+      border: 1px solid #1e293b;
+      border-radius: 14px;
+      width: 420px;
+      padding: 24px;
+      box-shadow: 0 0 40px rgba(56, 189, 248, 0.15);
     }
 
     h1 {
-      margin-bottom: 1rem;
-      font-size: 1.5rem;
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+      color: #38bdf8;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-bottom: 20px;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: gray;
+      animation: pulse 1.5s infinite;
+    }
+
+    .dot.ok { background: #22c55e; }
+    .dot.err { background: #ef4444; }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.2); }
+      70% { box-shadow: 0 0 0 10px rgba(255,255,255,0); }
+      100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
     }
 
     button {
-      margin-top: 1rem;
-      padding: 0.6rem 1rem;
-      background: #2563eb;
-      color: white;
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      background: linear-gradient(135deg, #38bdf8, #6366f1);
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
+      color: #020617;
+      font-size: 0.95rem;
       cursor: pointer;
+      transition: transform 0.1s ease;
     }
 
     button:hover {
-      background: #1d4ed8;
+      transform: scale(1.02);
     }
 
     pre {
       background: #020617;
-      padding: 1rem;
-      margin-top: 1rem;
-      border-radius: 6px;
-      overflow-x: auto;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 16px;
+      font-size: 0.8rem;
+      max-height: 200px;
+      overflow-y: auto;
+      color: #a5f3fc;
     }
 
-    .error {
-      color: #f87171;
+    footer {
+      margin-top: 16px;
+      font-size: 0.7rem;
+      color: #64748b;
+      text-align: center;
     }
   </style>
 </head>
+
 <body>
-  <div class="card">
-    <h1>🚀 Backend Status</h1>
-    <p id="status">Checking backend...</p>
+  <div class="panel">
+    <h1>🚀 Docker Demo Dashboard</h1>
+    <div class="subtitle">Frontend → Nginx → Backend → MySQL</div>
 
-    <button onclick="loadTime()">Fetch DB Time</button>
+    <div class="status">
+      <div id="dot" class="dot"></div>
+      <div id="statusText">Checking backend…</div>
+    </div>
 
-    <pre id="output"></pre>
+    <button onclick="fetchDb()">Fetch DB Time</button>
+
+    <pre id="output">Waiting for action…</pre>
+
+    <footer>
+      CI/CD • Docker Compose • EC2
+    </footer>
   </div>
 
   <script>
-    const statusEl = document.getElementById("status");
-    const outputEl = document.getElementById("output");
+    const statusText = document.getElementById("statusText");
+    const dot = document.getElementById("dot");
+    const output = document.getElementById("output");
 
     // Check backend root
     fetch("/")
       .then(res => res.text())
-      .then(text => {
-        statusEl.textContent = text;
+      .then(() => {
+        statusText.textContent = "Backend ONLINE";
+        dot.classList.add("ok");
       })
       .catch(() => {
-        statusEl.innerHTML = '<span class="error">Backend unreachable</span>';
+        statusText.textContent = "Backend OFFLINE";
+        dot.classList.add("err");
       });
 
-    // Call /users (DB check)
-    function loadTime() {
-      outputEl.textContent = "Loading...";
+    function fetchDb() {
+      output.textContent = "Querying database...";
       fetch("/users")
         .then(res => {
           if (!res.ok) throw new Error("Request failed");
           return res.json();
         })
         .then(data => {
-          outputEl.textContent = JSON.stringify(data, null, 2);
+          output.textContent = JSON.stringify(data, null, 2);
         })
         .catch(err => {
-          outputEl.innerHTML = `<span class="error">${err.message}</span>`;
+          output.textContent = "ERROR: " + err.message;
         });
     }
   </script>
