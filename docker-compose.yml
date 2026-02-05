@@ -23,17 +23,8 @@ services:
       - .env
     
     restart: unless-stopped
-
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 256M
-
     mem_limit: 100m
+    cpu: "0.5"
     
 
   
