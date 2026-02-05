@@ -19,11 +19,8 @@ services:
       db:
         condition: service_healthy
 
-    environment:
-      DB_HOST: db
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      DB_NAME: ${DB_NAME}
+    env_file:
+      - .env
     
     restart: unless-stopped
 
@@ -43,9 +40,9 @@ services:
   db:
     image: mysql:8.0
     container_name: mysql_db
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    env_file:
+      - .env
+
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
