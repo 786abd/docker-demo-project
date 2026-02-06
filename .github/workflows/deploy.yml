@@ -48,9 +48,9 @@ jobs:
           done
           exit 1
 
-      - name: run other containers
-        run: |
-          docker compose up -d
+      # - name: run other containers
+      #   run: |
+      #     docker compose up -d
       - name: List running containers
         run: |
           docker ps
