@@ -38,7 +38,7 @@ jobs:
 
       - name: Rolling update backend service
         run: |
-          docker compose up -d --no-deps --build backend
+          docker compose up -d --no-deps --scale backend=2 backend
 
       - name: wait for backend to be healthy
         run: |
@@ -54,6 +54,10 @@ jobs:
       - name: List running containers
         run: |
           docker ps
+
+      - name: Down the old backend container
+        run: |
+          docker compose up -d --no-deps --scale backend=1 backend
 
       - name: container logs
         run: |

@@ -61,7 +61,7 @@ app.get("/health", async (req, res) => {
 app.use(express.static("public"));
 
 app.get("/", (req, res) => {
-  res.send("Backend service running, let's go!");
+  res.send("Backend service running, let's go!!!");
 });
 
 app.get("/users", (req, res) => {
