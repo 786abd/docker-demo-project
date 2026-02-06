@@ -25,11 +25,30 @@ jobs:
           MYSQL_DATABASE=demodb
           EOF
 
-      - name: Cleanup old containers and volumes
-        run: |
-          docker compose down -v
+      # - name: Cleanup old containers and volumes
+      #   run: |
+      #     docker compose down -v
 
-      - name: run containers
+      - name: Set backend version
+        run: echo "BACKEND_VERSION=$(date +%s)" >> $GITHUB_ENV
+
+      - name: Build docker images
+        run: |
+          docker compose build backend
+
+      - name: Rolling update backend service
+        run: |
+          docker compose up -d --no-deps --build backend
+
+      - name: wait for backend to be healthy
+        run: |
+          for i in {1..15}; do
+            curl -f http://localhost:9000/health && exit 0
+            sleep 5
+          done
+          exit 1
+
+      - name: run other containers
         run: |
           docker compose up -d
       - name: List running containers

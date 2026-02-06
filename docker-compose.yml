@@ -11,7 +11,7 @@ services:
 
   backend:
     build: ./backend
-    container_name: backend_service
+    image: backend:${BACKEND_VERSION:-v1}
     expose:
       - 3000
     depends_on:
